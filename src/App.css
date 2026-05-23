@@ -1,0 +1,80 @@
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+}
+
+.app-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 0;
+  font-size: 11px;
+  color: var(--text-secondary, #aaa);
+  opacity: 0.6;
+  user-select: none;
+}
+
+.app-footer-sep {
+  opacity: 0.4;
+}
+
+.dashboard-content {
+  flex: 1;
+}
+
+main {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Micro-animations */
+.button-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.tab-link:hover {
+  background: rgba(0, 115, 234, 0.05);
+}
+
+.warning-banner {
+  background-color: #ffcc00;
+  /* Monday Warning Yellow */
+  color: #333;
+  padding: 10px 20px;
+  text-align: center;
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.warning-icon {
+  font-size: 16px;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: #0073ea;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
+  font-family: inherit;
+}

@@ -1,0 +1,280 @@
+.table-container {
+    margin: 24px 40px;
+    background: white;
+    overflow: hidden;
+}
+
+.table-header {
+    padding: 24px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.subtitle {
+    margin: 4px 0 0 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.table-stats {
+    display: flex;
+    gap: 8px;
+}
+
+.badge-pill-blue {
+    background: #e1f4ff;
+    color: #0073ea;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-pill-green {
+    background: #e1f4ec;
+    color: #00c875;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-pill-green-light {
+    background: #e1f4ec;
+    color: #008a4f;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-pill-orange-light {
+    background: #fff6e1;
+    color: #a25e00;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-pill-red-light {
+    background: #fff0f0;
+    color: #e44258;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.vibe-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.vibe-table th {
+    text-align: left;
+    padding: 12px 24px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #676879;
+    background: #f8f9fb;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.vibe-table th:nth-child(6),
+.vibe-table td:nth-child(6) {
+    min-width: 150px;
+}
+
+.vibe-table td {
+    padding: 16px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.vibe-table tr:hover {
+    background: #f8f9fb;
+}
+
+.cell-phone {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.phone-icon-bg {
+    width: 36px;
+    height: 36px;
+    background: #f0f7ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.phone-details .number {
+    font-weight: 700;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.phone-details .id {
+    font-size: 11px;
+    color: var(--text-secondary);
+    display: block;
+}
+
+.phone-details .desc {
+    font-size: 12px;
+    color: var(--primary-color);
+    display: block;
+    margin-top: 2px;
+}
+
+.cell-country {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.flag {
+    font-size: 20px;
+}
+
+.country-info .name {
+    font-weight: 700;
+    display: block;
+}
+
+.country-info .code {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.cell-status {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.status-toggle {
+    width: 36px;
+    height: 18px;
+    background: #00c875;
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.status-toggle::after {
+    content: '';
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.status-toggle.toggle-off {
+    background: #d0d4e4;
+}
+
+.status-toggle.toggle-off::after {
+    right: auto;
+    left: 2px;
+}
+
+.cell-workspace .name {
+    font-weight: 700;
+    display: block;
+}
+
+.cell-workspace .id {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.cell-board {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.board-info .name {
+    font-weight: 700;
+    display: block;
+}
+
+.board-info .id {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.cell-messages .messages-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.cell-messages .count {
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.cell-messages .total {
+    font-size: 11px;
+    color: var(--text-secondary);
+    display: block;
+}
+
+.cell-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-edit {
+    background: white;
+    border: 1px solid #d0d4e4;
+    border-radius: 4px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-main);
+    transition: background 0.2s;
+}
+
+.btn-edit:hover {
+    background: #f8f9fb;
+    border-color: var(--primary-color);
+}
+
+.btn-menu {
+    background: none;
+    border: none;
+    padding: 4px;
+    color: #676879;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}

@@ -1,0 +1,59 @@
+.edit-modal {
+    max-width: 500px;
+}
+
+.number-info-banner {
+    background: #f8f9fa;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 24px;
+}
+
+.number-info-banner .info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.number-info-banner .info-item label {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.number-info-banner .info-item span {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.error-text {
+    color: #ff4d4f;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.alert {
+    padding: 12px;
+    border-radius: 4px;
+    margin-top: 16px;
+    font-size: 14px;
+}
+
+.alert-error {
+    background-color: #fff2f0;
+    border: 1px solid #ffccc7;
+    color: #cf1322;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 1;
+}

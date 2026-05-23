@@ -1,0 +1,30 @@
+.vibe-toggle {
+    width: 36px;
+    height: 18px;
+    background: #00c875;
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.vibe-toggle::after {
+    content: '';
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.vibe-toggle.toggle-off {
+    background: #d0d4e4;
+}
+
+.vibe-toggle.toggle-off::after {
+    right: auto;
+    left: 2px;
+}

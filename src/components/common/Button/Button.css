@@ -1,0 +1,71 @@
+.vibe-btn {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+}
+
+.btn-white {
+    background: white;
+    color: var(--primary-color);
+    font-weight: 700;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-white:hover {
+    background: #f8f9fb;
+    transform: translateY(-2px);
+}
+
+.btn-outline-white {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid white;
+    font-weight: 700;
+}
+
+.btn-outline-white:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-edit {
+    background: white;
+    border: 1px solid #d0d4e4;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-main);
+    padding: 6px 16px;
+}
+
+.btn-edit:hover {
+    background: #f8f9fb;
+    border-color: var(--primary-color);
+}
+
+.btn-menu {
+    background: none;
+    border: none;
+    padding: 4px;
+    color: #676879;
+}
+
+.btn-icon {
+    display: flex;
+    align-items: center;
+}

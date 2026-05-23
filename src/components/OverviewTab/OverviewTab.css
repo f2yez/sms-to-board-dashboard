@@ -1,0 +1,134 @@
+.overview-container {
+    padding: 24px 40px;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 24px;
+}
+
+.stats-grid {
+    grid-column: 1 / span 2;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    padding: 24px;
+    text-align: center;
+}
+
+.stat-card .icon {
+    margin-bottom: 12px;
+    display: block;
+}
+
+.stat-card .value {
+    font-size: 32px;
+    font-weight: 700;
+    display: block;
+}
+
+.stat-card .label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: block;
+    margin-top: 4px;
+}
+
+.stat-card .trend {
+    font-size: 11px;
+    margin-top: 8px;
+    display: block;
+}
+
+.trend-up {
+    color: #008a4f;
+    background: #e1f4ec;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.recent-activity {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.activity-item {
+    display: flex;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-avatar {
+    width: 40px;
+    height: 40px;
+    background: #ccefff;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+}
+
+.activity-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-details .meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.activity-details .name {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.activity-details .time {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.activity-details .msg {
+    font-size: 13px;
+    color: var(--text-main);
+    margin-top: 4px;
+}
+
+.sidebar-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.workspace-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.workspace-info .name {
+    font-weight: 600;
+    font-size: 13px;
+    display: block;
+}
+
+.workspace-info .count {
+    font-size: 11px;
+    color: var(--primary-color);
+}
