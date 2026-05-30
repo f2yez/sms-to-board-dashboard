@@ -18,6 +18,7 @@ import {
 import { selectMondayToken, selectMondayContext, fetchWorkspacesStart, setMondayToken, setMondayError, setMondayContext } from '../slices/mondaySlice';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const DASHBOARD_API = `${API_BASE}/api/monday/dashboard`;
 
 function authHeaders(token, context) {
     return {
@@ -64,30 +65,20 @@ function* fetchDashboardDataSaga() {
     try {
         const token = yield call(waitForToken);
         const context = yield call(waitForContext);
-        const boardId = context?.boardId;
-        const objectView = isObjectView(context);
         const config = { headers: authHeaders(token, context) };
 
         const requests = [
-            call(axios.get, `${API_BASE}/api/usage`, config),
-            objectView
-                ? call(axios.get, `${API_BASE}/api/account/recipes`, config)
-                : boardId
-                    ? call(axios.get, `${API_BASE}/api/boards/${boardId}/recipes`, config)
-                    : call(() => Promise.resolve({ data: [] })),
-            objectView
-                ? call(axios.get, `${API_BASE}/api/account/activity?limit=10`, config)
-                : boardId
-                    ? call(axios.get, `${API_BASE}/api/boards/${boardId}/activity?limit=10`, config)
-                    : call(() => Promise.resolve({ data: { activity: [] } })),
+            call(axios.get, `${DASHBOARD_API}/overview`, config),
+            call(axios.get, `${DASHBOARD_API}/numbers`, config),
+            call(axios.get, `${DASHBOARD_API}/messages/recent`, config),
         ];
 
-        const [usageRes, recipesRes, activityRes] = yield all(requests);
+        const [overviewRes, numbersRes, messagesRes] = yield all(requests);
 
         yield put(fetchDashboardDataSuccess({
-            usage: usageRes.data,
-            recipes: Array.isArray(recipesRes.data) ? recipesRes.data : [],
-            activity: activityRes.data?.activity || [],
+            overview: overviewRes.data || {},
+            numbers: Array.isArray(numbersRes.data) ? numbersRes.data : [],
+            messages: Array.isArray(messagesRes.data) ? messagesRes.data : [],
         }));
 
         yield put(fetchWorkspacesStart());
@@ -99,15 +90,14 @@ function* fetchDashboardDataSaga() {
 
 function* updateNumberStatusSaga(action) {
     try {
-        const { id, toggle, boardId } = action.payload;
+        const { id, toggle } = action.payload;
         const token = yield select(selectMondayToken);
         const context = yield select(selectMondayContext);
-        const resolvedBoardId = boardId || context?.boardId;
         const config = { headers: authHeaders(token, context) };
 
         yield call(
             axios.put,
-            `${API_BASE}/api/boards/${resolvedBoardId}/recipes/${id}`,
+            `${DASHBOARD_API}/numbers/${id}`,
             { isActive: toggle },
             config
         );
@@ -125,7 +115,7 @@ function* searchNumbersSaga(action) {
 
         const response = yield call(
             axios.post,
-            `${API_BASE}/api/numbers/search`,
+            `${DASHBOARD_API}/providers/search-numbers`,
             { country, type, pattern, connectionType, apiKey, apiSecret },
             config
         );
@@ -146,7 +136,7 @@ function* rentNumberSaga(action) {
 
         const response = yield call(
             axios.post,
-            `${API_BASE}/api/numbers/rent`,
+            `${DASHBOARD_API}/numbers/rent`,
             { ...action.payload, boardId: action.payload.boardId || context?.boardId },
             config
         );
@@ -165,12 +155,11 @@ function* editNumberSaga(action) {
         const context = yield select(selectMondayContext);
         const config = { headers: authHeaders(token, context) };
 
-        const { id, boardId, ...data } = action.payload;
-        const resolvedBoardId = boardId || context?.boardId;
+        const { id, ...data } = action.payload;
 
         const response = yield call(
             axios.put,
-            `${API_BASE}/api/boards/${resolvedBoardId}/recipes/${id}`,
+            `${DASHBOARD_API}/numbers/${id}`,
             data,
             config
         );

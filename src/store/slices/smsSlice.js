@@ -37,32 +37,27 @@ const smsSlice = createSlice({
             state.error = null;
         },
         fetchDashboardDataSuccess: (state, action) => {
-            const { usage, recipes, activity } = action.payload;
+            const { overview, numbers, messages } = action.payload;
+            const data = overview || {};
 
-            // Map usage quota to stats
-            const q = usage?.quota || {};
             state.stats = [
-                { label: 'Active Numbers', value: q.boardsCount?.used || 0, trend: 'up', trendValue: 'Total' },
-                { label: 'Received SMS', value: q.smsCount?.used || 0, trend: 'up', trendValue: 'Total' },
-                { label: 'Created Items', value: q.itemsCount?.used || 0, trend: 'up', trendValue: 'Monday.com' },
-                { label: 'Plan', value: usage?.planName || 'Free', trend: 'up', trendValue: 'Active' },
+                { label: 'Active Numbers', value: data.activeNumbers || 0, trend: 'up', trendValue: 'Total' },
+                { label: 'Received SMS', value: data.totalMessages || data.smsCount || 0, trend: 'up', trendValue: 'Total' },
+                { label: 'Connected Boards', value: data.connectedWorkspaces || data.boardsCount || 0, trend: 'up', trendValue: 'Boards' },
+                { label: 'Response Rate', value: `${data.responseRate || 0}%`, trend: 'up', trendValue: 'Inbound' },
             ];
 
-            // Store quota info
             state.quota = {
-                boardsCount: q.boardsCount?.used || 0,
-                maxBoards: q.boardsCount?.limit || 0,
-                smsCount: q.smsCount?.used || 0,
-                maxSms: q.smsCount?.limit || 0,
-                itemsCount: q.itemsCount?.used || 0,
-                activeNumbers: q.boardsCount?.used || 0,
-                planName: usage?.planName || '',
-                planSlug: usage?.planSlug || '',
-                isTrial: usage?.isTrial || false,
+                boardsCount: data.boardsCount || data.activeNumbers || 0,
+                maxBoards: data.maxBoards || 0,
+                smsCount: data.smsCount || data.totalMessages || 0,
+                maxSms: data.maxSms || 0,
+                itemsCount: data.itemsCount || 0,
+                maxItems: data.maxItems || 0,
+                activeNumbers: data.activeNumbers || 0,
             };
 
-            // Map recipes to numbers display format
-            const recipeList = Array.isArray(recipes) ? recipes : [];
+            const recipeList = Array.isArray(numbers) ? numbers : [];
             state.numbers = recipeList.map(r => ({
                 id: r._id,
                 name: r.numberId?.customName || r.name || 'Untitled',
@@ -77,18 +72,16 @@ const smsSlice = createSlice({
                 senderNumberColumnId: r.senderNumberColumnId,
                 smsBodyColumnId: r.smsBodyColumnId,
                 dateTimeColumnId: r.dateTimeColumnId,
-                authorizationStatus: r.authorizationStatus,
                 messages: 0,
             }));
 
-            // Map activity to activities display format
-            const activityList = Array.isArray(activity) ? activity : [];
+            const activityList = Array.isArray(messages) ? messages : [];
             state.activities = activityList.map(a => ({
                 name: a.sender || 'Unknown',
-                time: new Date(a.receivedAt || a.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                time: new Date(a.receivedAt || a.createdAt || a.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 msg: a.body,
                 icon: (a.sender || 'U').substring(0, 2).toUpperCase(),
-                result: a.result,
+                result: a.addedToBoard ? 'created' : (a.failedReason ? 'failed' : a.status),
             }));
 
             state.loading = false;
@@ -152,23 +145,31 @@ const smsSlice = createSlice({
             state.edit.loading = false;
             state.edit.result = action.payload;
 
-            // action.payload is the updated recipe doc from PUT /api/boards/:boardId/recipes/:id
-            const recipe = action.payload;
+            const { recipe, number } = action.payload;
             if (recipe && recipe._id) {
                 const index = state.numbers.findIndex(n => n.id === recipe._id);
                 if (index !== -1) {
                     state.numbers[index] = {
                         ...state.numbers[index],
-                        name: recipe.numberId?.customName || recipe.name || state.numbers[index].name,
-                        workspaceId: recipe.workspaceId || state.numbers[index].workspaceId,
-                        boardId: recipe.boardId || state.numbers[index].boardId,
+                        name: number?.customName || recipe.numberId?.customName || state.numbers[index].name,
+                        workspaceId: number?.workspaceId || recipe.numberId?.workspaceId || state.numbers[index].workspaceId,
+                        boardId: recipe.boardId || number?.boardId || state.numbers[index].boardId,
                         senderNumberColumnId: recipe.senderNumberColumnId,
                         smsBodyColumnId: recipe.smsBodyColumnId,
-                        dateTimeColumnId: recipe.dateTimeColumnId,
-                        toggle: recipe.isActive,
-                        status: recipe.isActive ? 'active' : 'paused',
-                        authorizationStatus: recipe.authorizationStatus,
+                        dateTimeColumnId: recipe.dateTimeColumnId
                     };
+
+                    if (number) {
+                        state.numbers[index].number = number.boardNumber || state.numbers[index].number;
+                        state.numbers[index].toggle = number.isActive ?? recipe.isActive ?? state.numbers[index].toggle;
+                    } else if (recipe.numberId && typeof recipe.numberId === 'object') {
+                        state.numbers[index].number = recipe.numberId.boardNumber || state.numbers[index].number;
+                    }
+
+                    if (recipe.isActive !== undefined) {
+                        state.numbers[index].toggle = recipe.isActive;
+                        state.numbers[index].status = recipe.isActive ? 'active' : 'paused';
+                    }
                 }
             }
         },
