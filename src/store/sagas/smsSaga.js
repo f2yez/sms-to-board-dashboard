@@ -1,5 +1,4 @@
 import { all, takeLatest, put, call, select, race, take } from 'redux-saga/effects';
-import axios from 'axios';
 import {
     fetchDashboardDataStart,
     fetchDashboardDataSuccess,
@@ -16,17 +15,7 @@ import {
     editNumberFailure
 } from '../slices/smsSlice';
 import { selectMondayToken, selectMondayContext, fetchWorkspacesStart, setMondayToken, setMondayError, setMondayContext } from '../slices/mondaySlice';
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
-function authHeaders(token, context) {
-    return {
-        Authorization: token ? `Bearer ${token}` : undefined,
-        'x-monday-board-id': context?.boardId,
-        'x-monday-account-id': context?.user?.accountId,
-        'x-monday-workspace-id': context?.workspaceId,
-    };
-}
+import { buildAuthHeaders, dashboardApi } from '../../services/api';
 
 function* waitForToken() {
     let token = yield select(selectMondayToken);
@@ -64,30 +53,18 @@ function* fetchDashboardDataSaga() {
     try {
         const token = yield call(waitForToken);
         const context = yield call(waitForContext);
-        const boardId = context?.boardId;
-        const objectView = isObjectView(context);
-        const config = { headers: authHeaders(token, context) };
+        const headers = buildAuthHeaders(token, context);
 
-        const requests = [
-            call(axios.get, `${API_BASE}/api/usage`, config),
-            objectView
-                ? call(axios.get, `${API_BASE}/api/account/recipes`, config)
-                : boardId
-                    ? call(axios.get, `${API_BASE}/api/boards/${boardId}/recipes`, config)
-                    : call(() => Promise.resolve({ data: [] })),
-            objectView
-                ? call(axios.get, `${API_BASE}/api/account/activity?limit=10`, config)
-                : boardId
-                    ? call(axios.get, `${API_BASE}/api/boards/${boardId}/activity?limit=10`, config)
-                    : call(() => Promise.resolve({ data: { activity: [] } })),
-        ];
-
-        const [usageRes, recipesRes, activityRes] = yield all(requests);
+        const [overview, numbers, messages] = yield all([
+            call([dashboardApi, dashboardApi.getOverview], headers),
+            call([dashboardApi, dashboardApi.getReservedNumbers], headers),
+            call([dashboardApi, dashboardApi.getRecentMessages], headers),
+        ]);
 
         yield put(fetchDashboardDataSuccess({
-            usage: usageRes.data,
-            recipes: Array.isArray(recipesRes.data) ? recipesRes.data : [],
-            activity: activityRes.data?.activity || [],
+            overview: overview || {},
+            numbers: Array.isArray(numbers) ? numbers : [],
+            messages: Array.isArray(messages) ? messages : [],
         }));
 
         yield put(fetchWorkspacesStart());
@@ -99,18 +76,11 @@ function* fetchDashboardDataSaga() {
 
 function* updateNumberStatusSaga(action) {
     try {
-        const { id, toggle, boardId } = action.payload;
+        const { id, toggle } = action.payload;
         const token = yield select(selectMondayToken);
         const context = yield select(selectMondayContext);
-        const resolvedBoardId = boardId || context?.boardId;
-        const config = { headers: authHeaders(token, context) };
-
-        yield call(
-            axios.put,
-            `${API_BASE}/api/boards/${resolvedBoardId}/recipes/${id}`,
-            { isActive: toggle },
-            config
-        );
+        const headers = buildAuthHeaders(token, context);
+        yield call([dashboardApi, dashboardApi.updateNumber], headers, id, { isActive: toggle });
     } catch (error) {
         console.error('Failed to update recipe status:', error);
     }
@@ -121,16 +91,9 @@ function* searchNumbersSaga(action) {
         const { country, type, pattern, connectionType, apiKey, apiSecret } = action.payload;
         const token = yield select(selectMondayToken);
         const context = yield select(selectMondayContext);
-        const config = { headers: authHeaders(token, context) };
-
-        const response = yield call(
-            axios.post,
-            `${API_BASE}/api/numbers/search`,
-            { country, type, pattern, connectionType, apiKey, apiSecret },
-            config
-        );
-
-        yield put(searchNumbersSuccess(response.data));
+        const headers = buildAuthHeaders(token, context);
+        const data = yield call([dashboardApi, dashboardApi.searchAvailableNumbers], headers, { country, type, pattern, connectionType, apiKey, apiSecret });
+        yield put(searchNumbersSuccess(data));
     } catch (error) {
         yield put(searchNumbersFailure(
             error.response?.data?.message || error.response?.data?.error || error.message || 'Failed to search numbers'
@@ -142,16 +105,9 @@ function* rentNumberSaga(action) {
     try {
         const token = yield select(selectMondayToken);
         const context = yield select(selectMondayContext);
-        const config = { headers: authHeaders(token, context) };
-
-        const response = yield call(
-            axios.post,
-            `${API_BASE}/api/numbers/rent`,
-            { ...action.payload, boardId: action.payload.boardId || context?.boardId },
-            config
-        );
-
-        yield put(rentNumberSuccess(response.data));
+        const headers = buildAuthHeaders(token, context);
+        const data = yield call([dashboardApi, dashboardApi.rentNumber], headers, { ...action.payload, boardId: action.payload.boardId || context?.boardId });
+        yield put(rentNumberSuccess(data));
         yield put(fetchDashboardDataStart());
     } catch (error) {
         const message = error.response?.data?.message || error.response?.data?.error || error.message || 'Failed to rent number';
@@ -163,19 +119,10 @@ function* editNumberSaga(action) {
     try {
         const token = yield select(selectMondayToken);
         const context = yield select(selectMondayContext);
-        const config = { headers: authHeaders(token, context) };
-
-        const { id, boardId, ...data } = action.payload;
-        const resolvedBoardId = boardId || context?.boardId;
-
-        const response = yield call(
-            axios.put,
-            `${API_BASE}/api/boards/${resolvedBoardId}/recipes/${id}`,
-            data,
-            config
-        );
-
-        yield put(editNumberSuccess(response.data));
+        const headers = buildAuthHeaders(token, context);
+        const { id, ...data } = action.payload;
+        const result = yield call([dashboardApi, dashboardApi.updateNumber], headers, id, data);
+        yield put(editNumberSuccess(result));
     } catch (error) {
         const message = error.response?.data?.message || error.response?.data?.error || error.message || 'Failed to update recipe';
         yield put(editNumberFailure(message));

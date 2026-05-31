@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import mondaySdk from 'monday-sdk-js';
 import { selectIsConnected, selectIsCheckingConnection, checkConnectionStart } from '../../store/slices/mondaySlice';
-import { selectQuota } from '../../store/slices/smsSlice';
 import './SettingsTab.css';
 
 const monday = mondaySdk();
@@ -15,7 +14,6 @@ const SettingsTab = () => {
     // Use global state
     const isConnected = useSelector(selectIsConnected);
     const checkingStatus = useSelector(selectIsCheckingConnection);
-    const quota = useSelector(selectQuota);
 
     // Refresh status on mount
     useEffect(() => {
@@ -54,57 +52,6 @@ const SettingsTab = () => {
         }
     };
 
-    const renderUsageStats = () => {
-        const { smsCount = 0, maxSms = 0, maxBoards = 0, itemsCount = 0, activeNumbers = 0, planSlug = '', planName = '' } = quota || {};
-        const appPlan = (planSlug || planName || 'Free')
-            .split(/[^a-zA-Z0-9]/)
-            .filter(Boolean)
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-            .join('');
-        const smsProgress = maxSms > 0 ? (smsCount / maxSms) * 100 : 0;
-        const boardsProgress = maxBoards > 0 ? (activeNumbers / maxBoards) * 100 : 0;
-
-        return (
-            <div className="usage-stats">
-                {/* Monday.com Plan display removed as tier is not used for app plan */}
-                <div className="plan-info">
-                    <span className="plan-label">App Plan:</span>
-                    <span className="plan-badge app-plan-badge">{appPlan}</span>
-                </div>
-
-                <div className="stats-grid">
-                    <div className="stat-card">
-                        <div className="stat-header">
-                            <span className="stat-title">SMS Quota</span>
-                            <span className="stat-value">{smsCount} / {maxSms}</span>
-                        </div>
-                        <div className="progress-bar">
-                            <div className="progress-fill" style={{ width: `${Math.min(smsProgress, 100)}%` }}></div>
-                        </div>
-                    </div>
-
-                    <div className="stat-card">
-                        <div className="stat-header">
-                            <span className="stat-title">Active Numbers</span>
-                            <span className="stat-value">{activeNumbers} / {maxBoards}</span>
-                        </div>
-                        <div className="progress-bar">
-                            <div className="progress-fill" style={{ width: `${Math.min(boardsProgress, 100)}%` }}></div>
-                        </div>
-                    </div>
-
-                    <div className="stat-card">
-                        <div className="stat-header">
-                            <span className="stat-title">Created Items</span>
-                            <span className="stat-value">{itemsCount}</span>
-                        </div>
-                        <div className="stat-desc">Total items created on Monday.com</div>
-                    </div>
-                </div>
-            </div>
-        );
-    };
-
     return (
         <div className="settings-tab">
             <div className="settings-section">
@@ -124,7 +71,6 @@ const SettingsTab = () => {
                                 <span className="status-dot"></span>
                                 Connected to Monday.com
                             </div>
-                            {renderUsageStats()}
                         </div>
                     ) : (
                         <div className="disconnected-container">
